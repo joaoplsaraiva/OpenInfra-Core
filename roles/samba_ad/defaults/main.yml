@@ -1,0 +1,6 @@
+---
+domain_name: "empresa.local"
+realm_name: "EMPRESA.LOCAL"
+domain_workgroup: "EMPRESA"
+domain_admin_password: "SenhaSegura123!"
+dns_forwarder: "1.1.1.1"
