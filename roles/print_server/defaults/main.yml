@@ -1,0 +1,4 @@
+---
+cups_listen_port: 631
+cups_allow_network: "192.168.0.0/16"
+cups_admin_group: "lpadmin"
