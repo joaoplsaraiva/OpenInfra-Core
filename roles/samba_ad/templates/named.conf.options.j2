@@ -1,0 +1,15 @@
+options {
+    directory "/var/cache/bind";
+
+    forwarders {
+        {{ dns_forwarder }};
+    };
+
+    dnssec-validation auto;
+
+    listen-on-v6 { any; };
+    listen-on { any; };
+
+    allow-query { any; };
+    tkey-gssapi-keytab "/var/lib/samba/bind-dns/dns.keytab";
+};
