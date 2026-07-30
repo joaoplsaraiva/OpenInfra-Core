@@ -1,0 +1,16 @@
+# Arquivo de configuracao do Chrony gerenciado via Ansible
+
+{% for server in ntp_servers %}
+server {{ server }} iburst
+{% endfor %}
+
+# Permitir sincronizacao de clientes locais
+allow 192.168.0.0/16
+allow 10.0.0.0/8
+
+# Manter a hora precisa mesmo se a conexao falhar
+driftfile /var/lib/chrony/chrony.drift
+logdir /var/log/chrony
+
+# Sincronizacao acelerada ao iniciar
+makestep 1.0 3
