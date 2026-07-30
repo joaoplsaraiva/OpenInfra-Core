@@ -1,0 +1,96 @@
+---
+- name: Instalar pacotes do Samba, BIND9 e dependencias de Kerberos
+  apt:
+    name:
+      - samba
+      - winbind
+      - krb5-user
+      - bind9
+      - bind9utils
+      - ldb-tools
+      - python3-samba
+    state: present
+    update_cache: yes
+
+- name: Parar servicos padrao para provisionamento
+  service:
+    name: "{{ item }}"
+    state: stopped
+  loop:
+    - smbd
+    - nmbd
+    - winbind
+    - systemd-resolved
+
+- name: Desabilitar systemd-resolved para liberar a porta 53 do DNS
+  service:
+    name: systemd-resolved
+    enabled: no
+
+- name: Remover resolv.conf padrao e apontar para o DNS local
+  file:
+    path: /etc/resolv.conf
+    state: absent
+
+- name: Criar novo resolv.conf apontando para 127.0.0.1
+  copy:
+    dest: /etc/resolv.conf
+    content: |
+      nameserver 127.0.0.1
+      search {{ domain_name }}
+
+- name: Remover arquivo smb.conf padrao se existir
+  file:
+    path: /etc/samba/smb.conf
+    state: absent
+
+- name: Provisionar o Dominio Active Directory via samba-tool
+  command: >
+    samba-tool domain provision
+    --use-rfc2307
+    --realm={{ realm_name }}
+    --domain={{ domain_workgroup }}
+    --server-role=dc
+    --dns-backend=BIND9_DLZ
+    --adminpass='{{ domain_admin_password }}'
+  args:
+    creates: /var/lib/samba/private/krb5.conf
+
+- name: Copiar arquivo krb5.conf gerado pelo Samba para /etc/krb5.conf
+  copy:
+    src: /var/lib/samba/private/krb5.conf
+    dest: /etc/krb5.conf
+    remote_src: yes
+    mode: '0644'
+
+- name: Ajustar permissões do keytab do BIND9
+  file:
+    path: /var/lib/samba/bind-dns
+    mode: '0770'
+    group: bind
+
+- name: Inserir inclusão da zona BIND DLZ do Samba no named.conf.local
+  lineinfile:
+    path: /etc/bind/named.conf.local
+    line: 'include "/var/lib/samba/bind-dns/named.conf";'
+    state: present
+
+- name: Deploy das configuracoes de opcoes do BIND9
+  template:
+    src: named.conf.options.j2
+    dest: /etc/bind/named.conf.options
+    mode: '0644'
+  notify: Restart BIND9
+
+- name: Desmascarar e habilitar o servico Samba AD DC
+  systemd:
+    name: samba-ad-dc
+    masked: no
+    enabled: yes
+    state: started
+
+- name: Garantir BIND9 rodando e habilitado no boot
+  service:
+    name: bind9
+    state: started
+    enabled: yes
