@@ -1,0 +1,56 @@
+---
+- name: Instalar pacotes do Easy-RSA e Nginx (para distribuição do certificado)
+  apt:
+    name:
+      - easy-rsa
+      - nginx
+    state: present
+    update_cache: yes
+
+- name: Criar diretorio de trabalho do Easy-RSA
+  file:
+    path: "{{ pki_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Copiar scripts do Easy-RSA para o diretorio de trabalho
+  shell: make-cadir {{ pki_dir }}
+  args:
+    creates: "{{ pki_dir }}/easyrsa"
+
+- name: Deploy do arquivo de variaveis (vars) do Easy-RSA
+  template:
+    src: vars.j2
+    dest: "{{ pki_dir }}/vars"
+    mode: '0644'
+
+- name: Inicializar a estrutura PKI
+  command: ./easyrsa init-pki
+  args:
+    chdir: "{{ pki_dir }}"
+    creates: "{{ pki_dir }}/pki"
+
+- name: Gerar a Root CA (sem senha para automacao completa)
+  command: ./easyrsa --batch build-ca nopass
+  args:
+    chdir: "{{ pki_dir }}"
+    creates: "{{ pki_dir }}/pki/ca.crt"
+
+- name: Criar diretorio para exportar o certificado publico via HTTP
+  file:
+    path: "{{ pki_export_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Copiar o certificado Root CA para a pasta web do Nginx
+  copy:
+    src: "{{ pki_dir }}/pki/ca.crt"
+    dest: "{{ pki_export_dir }}/RootCA.crt"
+    remote_src: yes
+    mode: '0644'
+
+- name: Garantir que o Nginx esteja rodando para servir o certificado
+  service:
+    name: nginx
+    state: started
+    enabled: yes
