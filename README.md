@@ -156,3 +156,8 @@ Contribuições são super bem-vindas! Se você deseja adicionar suporte a novas
 ## 📜 Licença
 
 Este projeto é distribuído sob a licença **MIT**. Veja o arquivo `LICENSE` para mais detalhes.
+
+### Fontes Consultadas
+* **Samba Wiki Official:** `wiki.samba.org`
+* **Ansible Documentation:** `docs.ansible.com`
+* **GitHub Docs (Managing READMEs):** `[docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes)`
