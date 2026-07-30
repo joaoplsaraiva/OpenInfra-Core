@@ -1,0 +1,10 @@
+---
+- name: Restart BIND9
+  service:
+    name: bind9
+    state: restarted
+
+- name: Restart Samba AD DC
+  service:
+    name: samba-ad-dc
+    state: restarted
