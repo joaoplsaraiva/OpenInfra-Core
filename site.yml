@@ -1,0 +1,27 @@
+---
+- name: Provisionamento Completo da Infraestrutura OpenInfra-Core
+  hosts: domain_controllers
+  become: yes
+  gather_facts: yes
+
+  vars_files:
+    - group_vars/all.yml
+
+  roles:
+    - role: ntp
+      tags: [ntp, base]
+
+    - role: samba_ad
+      tags: [samba, ad, dns]
+
+    - role: dhcp
+      tags: [dhcp, network]
+
+    - role: pki
+      tags: [pki, ca, security]
+
+    - role: file_server
+      tags: [samba, storage, files]
+
+    - role: print_server
+      tags: [cups, print]
