@@ -1,0 +1,14 @@
+# Configuracoes de identidade da Root CA
+set_var EASYRSA_REQ_COUNTRY    "{{ pki_req_country }}"
+set_var EASYRSA_REQ_PROVINCE   "{{ pki_req_province }}"
+set_var EASYRSA_REQ_CITY       "{{ pki_req_city }}"
+set_var EASYRSA_REQ_ORG        "{{ pki_req_org }}"
+set_var EASYRSA_REQ_EMAIL      "{{ pki_req_email }}"
+set_var EASYRSA_REQ_OU         "{{ pki_req_ou }}"
+set_var EASYRSA_REQ_CN         "{{ pki_ca_name }}"
+
+# Parametros de Seguranca
+set_var EASYRSA_KEY_SIZE       2048
+set_var EASYRSA_ALGO           rsa
+set_var EASYRSA_CA_EXPIRE      3650
+set_var EASYRSA_CERT_EXPIRE    365
