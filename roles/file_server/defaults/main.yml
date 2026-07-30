@@ -1,0 +1,14 @@
+---
+file_shares_base_path: "/dados/compartilhado"
+
+file_shares:
+  - name: "Geral"
+    path: "/dados/compartilhado/geral"
+    comment: "Pasta de Uso Geral"
+    group: "Domain Users"
+    permissions: "0770"
+  - name: "Diretoria"
+    path: "/dados/compartilhado/diretoria"
+    comment: "Acesso Restrito - Diretoria"
+    group: "Domain Admins"
+    permissions: "0770"
