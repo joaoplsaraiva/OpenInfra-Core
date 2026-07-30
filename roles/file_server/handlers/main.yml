@@ -1,0 +1,5 @@
+---
+- name: Reload Samba Service
+  service:
+    name: samba-ad-dc
+    state: reloaded
