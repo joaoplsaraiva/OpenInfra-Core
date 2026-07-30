@@ -1,0 +1,48 @@
+# Configuracao do CUPS gerenciada via Ansible
+
+LogLevel warn
+PageLogFormat
+
+# Escutar na porta padrão 631 em todas as interfaces
+Port {{ cups_listen_port }}
+Listen /run/cups/cups.sock
+
+# Compartilhar impressoras na rede
+Browsing On
+BrowseLocalProtocols dnssd
+
+DefaultAuthType Basic
+
+# Acesso ao servidor de impressao
+<Location />
+  Order allow,deny
+  Allow @LOCAL
+  Allow {{ cups_allow_network }}
+</Location>
+
+# Acesso ao painel de administracao web
+<Location /admin>
+  Order allow,deny
+  Allow @LOCAL
+  Allow {{ cups_allow_network }}
+</Location>
+
+# Acesso aos arquivos de configuracao
+<Location /admin/conf>
+  AuthType Default
+  Require user @SYSTEM
+  Order allow,deny
+  Allow @LOCAL
+  Allow {{ cups_allow_network }}
+</Location>
+
+# Diretorio de spool
+<Policy default>
+  JobPrivateAccess default
+  JobPrivateValues default
+  SubscriptionPrivateAccess default
+  SubscriptionPrivateValues default
+  <Limit All>
+    Order deny,allow
+  </Limit>
+</Policy>
