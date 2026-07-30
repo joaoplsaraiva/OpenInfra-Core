@@ -1,0 +1,43 @@
+{
+  "Dhcp4": {
+    "interfaces-config": {
+      "interfaces": [ "{{ dhcp_interface }}" ]
+    },
+    "lease-database": {
+      "type": "memfile",
+      "persist": true,
+      "name": "/var/lib/kea/kea-leases4.csv"
+    },
+    "valid-lifetime": 4000,
+    "renew-timer": 1000,
+    "rebind-timer": 2000,
+
+    "option-data": [
+      {
+        "name": "domain-name-servers",
+        "data": "{{ dhcp_dns_server }}"
+      },
+      {
+        "name": "domain-name",
+        "data": "{{ dhcp_domain }}"
+      }
+    ],
+
+    "subnet4": [
+      {
+        "subnet": "{{ dhcp_subnet }}",
+        "pools": [
+          {
+            "pool": "{{ dhcp_pool_start }} - {{ dhcp_pool_end }}"
+          }
+        ],
+        "option-data": [
+          {
+            "name": "routers",
+            "data": "{{ dhcp_router }}"
+          }
+        ]
+      }
+    ]
+  }
+}
