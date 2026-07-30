@@ -1,0 +1,51 @@
+---
+- name: Instalar suporte a ACLs e utilitários do Linux
+  apt:
+    name:
+      - acl
+      - attr
+    state: present
+    update_cache: yes
+
+- name: Criar diretório base dos compartilhamentos
+  file:
+    path: "{{ file_shares_base_path }}"
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Criar pastas compartilhadas específicas
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: "{{ item.permissions }}"
+  loop: "{{ file_shares }}"
+
+- name: Aplicar permissões POSIX ACLs padrão nos diretórios
+  acl:
+    path: "{{ item.path }}"
+    entity: "{{ item.group }}"
+    etype: group
+    permissions: rwx
+    default: yes
+    state: present
+  loop: "{{ file_shares }}"
+
+- name: Adicionar blocos de compartilhamento no smb.conf
+  blockinfile:
+    path: /etc/samba/smb.conf
+    marker: "# {mark} ANSIBLE MANAGED SHARE {{ item.name }}"
+    block: |
+      [{{ item.name }}]
+         comment = {{ item.comment }}
+         path = {{ item.path }}
+         read only = no
+         browseable = yes
+         guest ok = no
+         valid users = @"{{ item.group }}"
+         vfs objects = acl_xattr
+         map acl inherit = yes
+         store dos attributes = yes
+  loop: "{{ file_shares }}"
+  notify: Reload Samba Service
