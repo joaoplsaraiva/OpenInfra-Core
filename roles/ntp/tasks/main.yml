@@ -1,0 +1,25 @@
+---
+- name: Garantir fuso horario correto
+  community.general.timezone:
+    name: "{{ ntp_timezone }}"
+
+- name: Instalar o pacote Chrony
+  apt:
+    name: chrony
+    state: present
+    update_cache: yes
+
+- name: Deploy da configuracao do Chrony (chrony.conf)
+  template:
+    src: chrony.conf.j2
+    dest: /etc/chrony/chrony.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart Chrony
+
+- name: Garantir que o servico Chrony esteja rodando e habilitado no boot
+  service:
+    name: chrony
+    state: started
+    enabled: yes
