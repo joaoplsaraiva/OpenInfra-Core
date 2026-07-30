@@ -1,0 +1,31 @@
+---
+- name: Instalar o servidor de impressao CUPS e utilitarios
+  apt:
+    name:
+      - cups
+      - cups-client
+      - cups-filters
+      - printer-driver-gutenprint
+    state: present
+    update_cache: yes
+
+- name: Deploy da configuracao do CUPS (cupsd.conf)
+  template:
+    src: cupsd.conf.j2
+    dest: /etc/cups/cupsd.conf
+    owner: root
+    group: lp
+    mode: '0640'
+  notify: Restart CUPS
+
+- name: Adicionar o usuario root ao grupo de administracao de impressao
+  user:
+    name: root
+    groups: "{{ cups_admin_group }}"
+    append: yes
+
+- name: Garantir que o servico CUPS esteja rodando e habilitado no boot
+  service:
+    name: cups
+    state: started
+    enabled: yes
