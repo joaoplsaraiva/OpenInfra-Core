@@ -1,0 +1,21 @@
+---
+- name: Instalar o servidor ISC Kea DHCPv4
+  apt:
+    name: kea-dhcp4-server
+    state: present
+    update_cache: yes
+
+- name: Deploy da configuracao do ISC Kea DHCP (kea-dhcp4.conf)
+  template:
+    src: kea-dhcp4.conf.j2
+    dest: /etc/kea/kea-dhcp4.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart Kea DHCP
+
+- name: Garantir que o servico Kea DHCP4 esteja rodando e habilitado no boot
+  service:
+    name: kea-dhcp4-server
+    state: started
+    enabled: yes
