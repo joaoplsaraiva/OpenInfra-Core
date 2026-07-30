@@ -1,0 +1,10 @@
+---
+pki_dir: "/etc/easy-rsa"
+pki_req_country: "BR"
+pki_req_province: "SP"
+pki_req_city: "Sao Paulo"
+pki_req_org: "Empresa Local LTDA"
+pki_req_email: "ca@empresa.local"
+pki_req_ou: "TI"
+pki_ca_name: "Empresa-Root-CA"
+pki_export_dir: "/var/www/html/certs" # Para disponibilizar o CRT na rede
